@@ -2,7 +2,7 @@ import SearchBar from "./SearchBar";
 import TrustIndicators from "./TrustIndicators";
 import FeaturedServiceCard from "./FeaturedServiceCard";
 
-export default function HeroSection() {
+export default function HeroSection({ featuredService }) {
   return (
     <section className="relative overflow-hidden px-6 py-12 lg:px-8 lg:py-16">
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.2fr_0.9fr]">
@@ -29,7 +29,7 @@ export default function HeroSection() {
 
         <div className="relative">
           <div className="absolute inset-0 -z-10 rounded-[36px] bg-gradient-to-br from-emerald-100 via-white to-slate-100 blur-2xl" />
-          <FeaturedServiceCard />
+          <FeaturedServiceCard service={featuredService} />
         </div>
       </div>
     </section>
