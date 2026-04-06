@@ -3,6 +3,8 @@ import ServicesHeader from "../../components/services/ServicesHeader";
 import ServicesSearchFilters from "../../components/services/ServicesSearchFilters";
 import ServicesStatsBar from "../../components/services/ServicesStatsBar";
 import ServiceCard from "../../components/services/ServiceCard";
+
+
 import { categories, services } from "../../services/servicesData";
 
 export default function ServicesPage() {
