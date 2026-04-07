@@ -1,28 +1,29 @@
 import { useMemo, useState } from "react";
-import ServicesHeader from "../../components/services/ServicesHeader";
-import ServicesSearchFilters from "../../components/services/ServicesSearchFilters";
-import ServicesStatsBar from "../../components/services/ServicesStatsBar";
-import ServiceCard from "../../components/services/ServiceCard";
-
-
-import { categories, services } from "../../services/servicesData";
+import ServicesHeader from "../services/ServicesHeader";
+import ServicesSearchFilters from "../services/ServicesSearchFilters";
+import ServicesStatsBar from "../services/ServicesStatsBar";
+import ServiceCard from "../services/ServiceCard";
+import { categories } from "../../services/servicesData";
+import { useServices } from "../../context/ServicesContext";
 
 export default function ServicesPage() {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState("All");
+  const { services } = useServices();
 
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
       const matchesQuery =
         service.title.toLowerCase().includes(query.toLowerCase()) ||
         service.description.toLowerCase().includes(query.toLowerCase()) ||
-        service.tag.toLowerCase().includes(query.toLowerCase());
+        (service.tag || "").toLowerCase().includes(query.toLowerCase());
 
-      const matchesTag = activeTag === "All" ? true : service.tag === activeTag;
+      const matchesTag =
+        activeTag === "All" ? true : (service.tag || "") === activeTag;
 
       return matchesQuery && matchesTag;
     });
-  }, [query, activeTag]);
+  }, [query, activeTag, services]);
 
   return (
     <main className="min-h-screen bg-[#f7faf8] text-slate-900">

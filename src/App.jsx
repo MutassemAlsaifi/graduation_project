@@ -4,22 +4,25 @@ import './App.css'
 import HomePage from './components/pages/HomePage';
 import ServicesPage from './components/pages/ServicesPage';
 import ServiceDetailsPage from './components/services/ServiceDetailsPage';
+import AddServicePage from './components/pages/AddServicePage';
+import EditServicePage from './components/pages/EditServicePage';
 
 function App() {
 
   return (
-    <React.StrictMode>
 
       <main className="min-h-screen bg-[#f8faf8] text-slate-900">
-        <BrowserRouter>
+        
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
-            <Route path="/services/:id" element={<ServiceDetailsPage />} />
+            <Route path="/addService" element={<AddServicePage  />} />
+             <Route path="/services/:id" element={<ServiceDetailsPage />} />
+             <Route path="/services/:id/edit" element={<EditServicePage />} />
           </Routes>
-        </BrowserRouter>
+        
       </main>
-    </React.StrictMode>
+ 
   );
 }
 

@@ -1,17 +1,18 @@
 import { useParams } from "react-router-dom";
-import { services } from "../../services/servicesData";
-import ServiceContactBar from "../services/ServiceContactBar";
-import ServiceDescription from "../services/ServiceDescription";
-import ServiceDetailsHeader from "../services/ServiceDetailsHeader";
-import ServiceHeroImage from "../services/ServiceHeroImage";
-import ServiceIncludedList from "../services/ServiceIncludedList";
-import ServiceInfoCards from "../services/ServiceInfoCards";
-import ServiceProviderCard from "../services/ServiceProviderCard";
+import { useServices } from "../../context/ServicesContext";
+import ServiceContactBar from "./ServiceContactBar";
+import ServiceDescription from "./ServiceDescription";
+import ServiceDetailsHeader from "./ServiceDetailsHeader";
+import ServiceHeroImage from "./ServiceHeroImage";
+import ServiceIncludedList from "./ServiceIncludedList";
+import ServiceInfoCards from "./ServiceInfoCards";
+import ServiceProviderCard from "./ServiceProviderCard";
 
 export default function ServiceDetailsPage() {
   const { id } = useParams();
+  const { getServiceById } = useServices();
 
-  const service = services.find((item) => item.id === Number(id));
+  const service = getServiceById(id);
 
   if (!service) {
     return (
@@ -24,28 +25,42 @@ export default function ServiceDetailsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f8f7]">
+    <main className="min-h-screen bg-[#f7f8f7] pb-16">
       <ServiceDetailsHeader />
 
-      <div className="mx-auto max-w-4xl px-5 pb-16 pt-2 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <h1 className="mb-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+          {service.title}
+        </h1>
+
         <ServiceHeroImage image={service.image} title={service.title} />
 
-        <ServiceContactBar service={service} />
+        <div className="mt-6">
+          <ServiceContactBar service={service} />
+        </div>
 
-        <ServiceProviderCard
-          provider={service.provider}
-          rating={service.rating}
-          reviewsCount={service.reviews_count}
-        />
+        <div className="mt-8">
+          <ServiceProviderCard
+            provider={service.provider}
+            rating={service.rating}
+            reviewsCount={service.reviews_count}
+          />
+        </div>
 
-        <ServiceDescription
-          description={service.description}
-          description2={service.description_2}
-        />
+        <div className="mt-10">
+          <ServiceDescription
+            description={service.description}
+            description2={service.description_2}
+          />
+        </div>
 
-        <ServiceIncludedList included={service.included} />
+        <div className="mt-10">
+          <ServiceIncludedList included={service.included} />
+        </div>
 
-        <ServiceInfoCards info={service.info} />
+        <div className="mt-10">
+          <ServiceInfoCards info={service.info} />
+        </div>
       </div>
     </main>
   );
