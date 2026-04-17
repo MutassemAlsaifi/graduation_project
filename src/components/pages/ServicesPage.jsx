@@ -5,6 +5,7 @@ import ServicesStatsBar from "../services/ServicesStatsBar";
 import ServiceCard from "../services/ServiceCard";
 import { categories } from "../../services/servicesData";
 import { useServices } from "../../context/ServicesContext";
+import AuthHeader from "../auth/AuthHeader";
 
 export default function ServicesPage() {
   const [query, setQuery] = useState("");
@@ -27,7 +28,7 @@ export default function ServicesPage() {
 
   return (
     <main className="min-h-screen bg-[#f7faf8] text-slate-900">
-      <ServicesHeader />
+      <AuthHeader />
 
       <ServicesSearchFilters
         query={query}
