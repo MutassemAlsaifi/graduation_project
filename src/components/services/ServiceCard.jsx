@@ -1,46 +1,59 @@
-import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 
 export default function ServiceCard({ service }) {
+  const serviceImage = service.images?.[0]?.path || "";
+
   return (
-    <Link to={`/services/${service.id}`}>
-      <article className="overflow-hidden rounded-[28px] border border-slate-200/70 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
-        <div className="aspect-[16/10] overflow-hidden">
-          <img
-            src={service.image}
-            alt={service.title}
-            className="h-full w-full object-cover transition duration-500 hover:scale-105"
-          />
+    <Link
+      to={`/services/${service.id}`}
+      className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
+    >
+      {serviceImage ? (
+        <img
+          src={serviceImage}
+          alt={service.title}
+          className="h-64 w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-64 w-full items-center justify-center bg-slate-100 text-sm text-slate-400">
+          No image uploaded
+        </div>
+      )}
+
+      <div className="p-6">
+        <p className="text-sm text-slate-500">
+          By {service.user?.name || "Unknown provider"}
+        </p>
+
+        <div className="mt-4 flex items-start justify-between gap-4">
+          <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
+            {service.title}
+          </h3>
+
+          <span className="text-xl font-semibold text-slate-800">
+            {service.price ? `$${service.price}` : "N/A"}
+            {service.price_type ? `/${service.price_type}` : ""}
+          </span>
         </div>
 
-        <div className="p-4 sm:p-5">
-          <div className="flex items-start justify-between gap-4">
-            <h3 className="line-clamp-2 text-lg font-semibold tracking-tight text-slate-900">
-              {service.title}
-            </h3>
+        <p className="mt-4 text-slate-500">
+          {service.category?.name || "Uncategorized"}
+        </p>
 
-            <span className="whitespace-nowrap text-sm font-semibold text-slate-700">
-              ${service.price}/{service.price_type}
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
+            <span>
+              {service.rating || 0} ({service.reviews_count || 0})
             </span>
           </div>
 
-          <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500">
-            {service.description}
-          </p>
-
-          <div className="mt-4 flex items-center justify-between gap-3 text-sm">
-            <div className="flex items-center gap-1 text-amber-500">
-              <Star className="h-4 w-4 fill-current" />
-              <span className="font-medium text-slate-700">{service.rating}</span>
-              <span className="text-slate-400">({service.reviews_count})</span>
-            </div>
-
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-              {service.tag}
-            </span>
-          </div>
+          <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
+            {service.category?.name || "Service"}
+          </span>
         </div>
-      </article>
+      </div>
     </Link>
   );
 }

@@ -1,55 +1,64 @@
-import { LayoutGrid } from "lucide-react";
-import { mockExistingServices } from "../../data/addServiceData";
+export default function AddServiceSidebar({ form, categories = [] }) {
+  const title = (form?.title || "").trim();
+  const description = (form?.description || "").trim();
+  const price = form?.price || "";
+  const categoryId = form?.category_id || "";
 
-export default function AddServiceSidebar({ title, category, price }) {
-  const suggestions = [];
+  const selectedCategory = categories.find(
+    (category) => String(category.id) === String(categoryId)
+  );
 
-  if (title.trim().length < 10) {
-    suggestions.push("Use a more descriptive title so the service is easier to discover.");
-  }
-  if (!category) {
-    suggestions.push("Choose a category to help users filter and find the service faster.");
-  }
-  if (!price) {
-    suggestions.push("Add a starting price to set expectations before users contact you.");
-  }
-  if (suggestions.length === 0) {
-    suggestions.push("Looks good. Add strong photos and a specific description to improve conversions.");
-  }
+  const isValid =
+    title.length > 3 &&
+    description.length > 10 &&
+    price !== "" &&
+    categoryId !== "";
 
   return (
     <aside className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center gap-3">
-        <div className="rounded-2xl bg-emerald-100 p-3 text-emerald-600">
-          <LayoutGrid className="h-5 w-5" />
-        </div>
-        <div>
-          <h3 className="text-base font-semibold text-slate-900">Publishing tips</h3>
-          <p className="text-sm text-slate-500">Make the page stronger before sending it to backend.</p>
-        </div>
+      <h3 className="text-lg font-semibold text-slate-900">Service status</h3>
+
+      <div className="mt-4 space-y-2 text-sm text-slate-600">
+        <p>
+          Title: <span className="font-medium">{title || "Missing"}</span>
+        </p>
+
+        <p>
+          Description:{" "}
+          <span className="font-medium">
+            {description ? "Added" : "Missing"}
+          </span>
+        </p>
+
+        <p>
+          Price: <span className="font-medium">{price || "Missing"}</span>
+        </p>
+
+        <p>
+          Category:{" "}
+          <span className="font-medium">
+            {selectedCategory?.name || "Missing"}
+          </span>
+        </p>
+
+        <p>
+          Images:{" "}
+          <span className="font-medium">
+            {form?.images?.length || 0}
+          </span>
+        </p>
       </div>
 
-      <div className="space-y-3">
-        {suggestions.map((item, index) => (
-          <div key={index} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600">
-            {item}
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-6 border-t border-slate-100 pt-5">
-        <p className="mb-3 text-sm font-semibold text-slate-800">Existing services</p>
-        <div className="space-y-3">
-          {mockExistingServices.map((item) => (
-            <div key={item.id} className="rounded-2xl border border-slate-200 px-4 py-3">
-              <p className="text-sm font-medium text-slate-800">{item.title}</p>
-              <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-                <span>{item.tag}</span>
-                <span>{item.price}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="mt-5">
+        <span
+          className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+            isValid
+              ? "bg-emerald-50 text-emerald-600"
+              : "bg-red-50 text-red-500"
+          }`}
+        >
+          {isValid ? "Ready to publish" : "Incomplete"}
+        </span>
       </div>
     </aside>
   );

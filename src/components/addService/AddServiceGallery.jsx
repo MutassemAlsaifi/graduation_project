@@ -1,24 +1,37 @@
-import UploadCard from "./UploadCard";
+const fallbackImage =
+  "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80";
 
-export default function AddServiceGallery({ images }) {
+export default function AddServiceGallery({ preview = [] }) {
+  console.log("gallery preview:", preview);
+
   return (
-    <section className="mt-8">
-      <div className="mb-5">
-        <h3 className="text-lg font-semibold text-slate-900">Service gallery</h3>
-        <p className="mt-1 text-sm text-slate-500">
-          Add up to 3 photos. Later this can connect to Laravel uploads.
-        </p>
-      </div>
+    <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 className="text-lg font-semibold text-slate-900">Image Preview</h3>
 
-      <div className="grid gap-5 md:grid-cols-3">
-        {images.map((image, index) => (
-          <UploadCard
-            key={index}
-            preview={image}
-            title={`Service photo ${index + 1}`}
+      {preview.length === 0 ? (
+        <div className="mt-4 overflow-hidden rounded-[24px] border border-slate-200">
+          <img
+            src={fallbackImage}
+            alt="Service preview"
+            className="h-[320px] w-full object-cover"
           />
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {preview.map((img, index) => (
+            <div
+              key={index}
+              className="overflow-hidden rounded-[20px] border border-slate-200"
+            >
+              <img
+                src={img}
+                alt={`Preview ${index + 1}`}
+                className="h-48 w-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -5,67 +5,122 @@ import AddServiceGallery from "../addService/AddServiceGallery";
 import AddServiceHeader from "../addService/AddServiceHeader";
 import AddServiceIntro from "../addService/AddServiceIntro";
 import AddServiceSidebar from "../addService/AddServiceSidebar";
-import { useServices } from "../../context/ServicesContext";
+import {
+  getCategories,
+  getServiceById,
+  updateServiceRequest,
+} from "../../services/servicesService";
 
 export default function EditServicePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getServiceById, updateService } = useServices();
-
-  const existingService = getServiceById(id);
 
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",
+    category_id: "",
     price: "",
     location: "",
     price_type: "project",
     duration: "",
     service_type: "",
-    image: "",
+    images: [],
   });
 
-  const [images, setImages] = useState(["", "", ""]);
+  const [categories, setCategories] = useState([]);
+  const [preview, setPreview] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (existingService) {
-      setForm({
-        title: existingService.title || "",
-        description: existingService.description || "",
-        category: existingService.category || "",
-        price: existingService.price || "",
-        location: existingService.location || "",
-        price_type: existingService.price_type || "project",
-        duration: existingService.duration || "",
-        service_type: existingService.service_type || "",
-        image: existingService.image || "",
-      });
+    const loadData = async () => {
+      try {
+        const [service, categoriesData] = await Promise.all([
+          getServiceById(id),
+          getCategories(),
+        ]);
 
-      setImages([existingService.image || "", "", ""]);
-    }
-  }, [existingService]);
+        setForm({
+          title: service.title || "",
+          description: service.description || "",
+          category_id: service.category_id || "",
+          price: service.price || "",
+          location: service.location || "",
+          price_type: service.price_type || "project",
+          duration: service.duration || "",
+          service_type: service.service_type || "",
+          images: [],
+        });
+
+        setPreview(
+          Array.isArray(service.images)
+            ? service.images.map((img) => img.path)
+            : []
+        );
+
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      } catch (error) {
+        console.error("Failed to load edit data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleImagesChange = (files) => {
+    const filesArray = Array.from(files || []);
 
-    updateService(id, {
-      ...form,
-      image: form.image || images[0],
-    });
+    setForm((prev) => ({
+      ...prev,
+      images: filesArray,
+    }));
 
-    navigate(`/services/${id}`);
+    const previews = filesArray.map((file) => URL.createObjectURL(file));
+    setPreview(previews);
   };
 
-  if (!existingService) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData();
+
+      formData.append("title", form.title);
+      formData.append("description", form.description);
+      formData.append("category_id", form.category_id);
+      formData.append("price", form.price);
+      formData.append("location", form.location);
+      formData.append("price_type", form.price_type);
+      formData.append("duration", form.duration);
+      formData.append("service_type", form.service_type);
+
+      form.images.forEach((image, index) => {
+        formData.append(`images[${index}]`, image);
+      });
+
+      const updatedService = await updateServiceRequest(id, formData);
+      navigate(`/services/${updatedService.id}`);
+    } catch (error) {
+      console.error("Failed to update service:", error);
+      console.error("STATUS:", error?.response?.status);
+      console.error("ERROR DATA:", error?.response?.data);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <main className="min-h-screen bg-[#f7faf8] p-10">
-        <div className="mx-auto max-w-4xl text-center text-slate-600">
-          Service not found
+      <main className="min-h-screen bg-[#f7faf8] p-10 text-slate-900">
+        <div className="mx-auto max-w-4xl text-center text-slate-500">
+          Loading service...
         </div>
       </main>
     );
@@ -75,30 +130,25 @@ export default function EditServicePage() {
     <main className="min-h-screen bg-[#f7faf8] text-slate-900">
       <AddServiceHeader />
 
-      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mx-auto max-w-7xl">
-          <AddServiceIntro
-            title="Edit Service"
-            subtitle="Update your service details and keep the page consistent across the platform."
-          />
+      <section className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[1fr_320px]">
+          <div className="space-y-6">
+            <AddServiceIntro />
 
-          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.48fr]">
+            <AddServiceGallery preview={preview} />
+
             <AddServiceForm
               form={form}
+              categories={categories}
               onChange={handleChange}
+              onImagesChange={handleImagesChange}
               onSubmit={handleSubmit}
-              isSubmitting={false}
-              submitLabel="Save Changes"
-            />
-
-            <AddServiceSidebar
-              title={form.title}
-              category={form.category}
-              price={form.price}
+              isSubmitting={isSubmitting}
+              isEdit
             />
           </div>
 
-          <AddServiceGallery images={images} />
+          <AddServiceSidebar form={form} categories={categories} />
         </div>
       </section>
     </main>
