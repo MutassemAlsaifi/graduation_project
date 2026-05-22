@@ -1,35 +1,90 @@
+import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import SectionHeader from "./SectionHeader";
-import ServiceCard from "./ServiceCard";
 
-export default function LatestServicesSection({ services = [], loading = false }) {
+const API_ORIGIN = import.meta.env.VITE_API_URL.replace("/api", "");
+
+function getImageUrl(path) {
+  if (!path) return "";
+
+  if (path.startsWith("https://")) {
+    return path;
+  }
+
+  if (path.startsWith("http://")) {
+    return path.replace("http://", "https://");
+  }
+
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
+  return `${API_ORIGIN}${cleanPath}`;
+}
+
+export default function FeaturedServiceCard({ service }) {
+  if (!service) return null;
+
+  const image = getImageUrl(service?.images?.[0]?.path);
+
+  const title = service?.title || "Untitled service";
+  const provider = service?.user?.name || "Unknown provider";
+  const rating = service?.rating || 0;
+
+  const priceText = service?.price
+    ? `$${service.price}${
+        service?.price_type ? `/${service.price_type}` : ""
+      }`
+    : "Price not specified";
+
   return (
-    <section id="services" className="px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-      <div className="mx-auto max-w-7xl">
-        <SectionHeader
-          title="Latest Services"
-          action={<Link to="/services">See more</Link>}
-        />
+    <div className="overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_-25px_rgba(15,23,42,0.18)]">
+      <div className="p-4 sm:p-5">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-500">
+          Featured Service
+        </p>
 
-        {loading ? (
-          <div className="rounded-[24px] border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
-            Loading latest services...
+        <div className="overflow-hidden rounded-3xl">
+          {image ? (
+            <img
+              src={image}
+              alt={title}
+              className="h-56 w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-56 w-full items-center justify-center bg-slate-100 text-sm text-slate-400">
+              No image uploaded
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4 flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              {title}
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-500">
+              {provider}
+            </p>
           </div>
-        ) : services.length === 0 ? (
-          <div className="rounded-[24px] border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
-            No services available right now.
+
+          <div className="flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-600">
+            <Star className="h-4 w-4 fill-current" />
+            {rating}
           </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-              />
-            ))}
-          </div>
-        )}
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <span className="text-base font-semibold text-slate-800">
+            {priceText}
+          </span>
+
+          <Link
+            to={`/services/${service.id}`}
+            className="rounded-full border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 transition hover:bg-emerald-50"
+          >
+            View details
+          </Link>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
