@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Pencil, Share2, Trash2 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useServices } from "../../context/ServicesContext";
-import { deleteServiceRequest } from "../../services/addServiceService";
+import { deleteServiceRequest } from "../../services/servicesService";
 import ConfirmModal from "../ui/ConfirmModal";
 import Toast from "../ui/Toast";
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
-
-export default function ServiceDetailsHeader() {
+export default function ServiceDetailsHeader({ service }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { deleteService } = useServices();
+
+  const token = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user");
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+
+  const isOwner =
+    Number(currentUser?.id) === Number(service?.user_id) ||
+    Number(currentUser?.id) === Number(service?.user?.id);
+
+  const canEditOrDelete =
+    !!token &&
+    !!currentUser &&
+    (currentUser?.role === "admin" ||
+      (currentUser?.role === "provider" && isOwner));
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -40,12 +50,7 @@ export default function ServiceDetailsHeader() {
     try {
       setIsDeleting(true);
 
-      if (USE_MOCK) {
-        deleteService(id);
-      } else {
-        await deleteServiceRequest(id);
-        deleteService(id);
-      }
+      await deleteServiceRequest(id);
 
       setToast({
         isOpen: true,
@@ -66,7 +71,9 @@ export default function ServiceDetailsHeader() {
         isOpen: true,
         type: "error",
         title: "Delete failed",
-        message: "Something went wrong while deleting the service.",
+        message:
+          error?.response?.data?.message ||
+          "Something went wrong while deleting the service.",
       });
     } finally {
       setIsDeleting(false);
@@ -76,37 +83,61 @@ export default function ServiceDetailsHeader() {
   return (
     <>
       <header className="px-5 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link
-            to="/services"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-slate-700"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to services
-          </Link>
-
-          <div className="flex items-center gap-4">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex items-center justify-between gap-4">
             <Link
-              to={`/services/${id}/edit`}
-              className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+              to="/services"
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-slate-700"
             >
-              <Pencil className="h-4 w-4" />
-              Edit
+              <ArrowLeft className="h-4 w-4" />
+              Back to services
             </Link>
 
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-1 text-sm font-medium text-red-500 transition hover:text-red-600"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </button>
+            <div className="flex items-center gap-4">
+              {canEditOrDelete && (
+                <>
+                  <Link
+                    to={`/services/${id}/edit`}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </Link>
 
-            <button className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700">
-              <Share2 className="h-4 w-4" />
-              Share
-            </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(true)}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-red-500 transition hover:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </button>
+                </>
+              )}
+
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </button>
+            </div>
           </div>
+
+          {service && (
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                {service.category?.name || "Uncategorized"}
+              </span>
+
+              <span>By {service.user?.name || "Unknown provider"}</span>
+
+              <span>•</span>
+
+              <span>{service.location || "Location not specified"}</span>
+            </div>
+          )}
         </div>
       </header>
 

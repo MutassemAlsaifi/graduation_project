@@ -1,23 +1,46 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../services/authService";
 import AuthInput from "./AuthInput";
 import AuthDivider from "./AuthDivider";
 import SocialAuthButtons from "./SocialAuthButtons";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
     remember: false,
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("LOGIN PAYLOAD READY FOR LARAVEL:", form);
+    try {
+      setIsSubmitting(true);
+
+      const response = await loginUser({
+  email: form.email.trim(),
+  password: form.password,
+});
+
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(response.user));
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+      console.log("ERROR DATA:", error?.response?.data);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -56,9 +79,10 @@ export default function LoginForm() {
 
       <button
         type="submit"
-        className="w-full rounded-2xl bg-emerald-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-emerald-600"
+        disabled={isSubmitting}
+        className="w-full rounded-2xl bg-emerald-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-70"
       >
-        Sign In
+        {isSubmitting ? "Signing in..." : "Sign In"}
       </button>
 
       <AuthDivider />
