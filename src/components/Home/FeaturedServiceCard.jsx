@@ -4,12 +4,18 @@ import { Link } from "react-router-dom";
 export default function FeaturedServiceCard({ service }) {
   if (!service) return null;
 
-  const image = service?.images?.[0]?.path || "";
+  const image = service?.images?.[0]?.path
+    ? `https://serv-production-0b49.up.railway.app/storage/${service.images[0].path}`
+    : "";
+
   const title = service?.title || "Untitled service";
   const provider = service?.user?.name || "Unknown provider";
   const rating = service?.rating || 0;
+
   const priceText = service?.price
-    ? `$${service.price}${service?.price_type ? `/${service.price_type}` : ""}`
+    ? `$${service.price}${
+        service?.price_type ? `/${service.price_type}` : ""
+      }`
     : "Price not specified";
 
   return (
@@ -35,8 +41,13 @@ export default function FeaturedServiceCard({ service }) {
 
         <div className="mt-4 flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-            <p className="mt-2 text-sm text-slate-500">{provider}</p>
+            <h3 className="text-lg font-semibold text-slate-900">
+              {title}
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-500">
+              {provider}
+            </p>
           </div>
 
           <div className="flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-600">
