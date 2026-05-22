@@ -1,28 +1,19 @@
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const API_ORIGIN = import.meta.env.VITE_API_URL.replace("/api", "");
-
-function getImageUrl(path) {
-  if (!path) return "";
-
-  if (path.startsWith("https://")) {
-    return path;
-  }
-
-  if (path.startsWith("http://")) {
-    return path.replace("http://", "https://");
-  }
-
-  const cleanPath = path.startsWith("/") ? path : `/${path}`;
-
-  return `${API_ORIGIN}${cleanPath}`;
-}
-
 export default function FeaturedServiceCard({ service }) {
   if (!service) return null;
 
-  const image = getImageUrl(service?.images?.[0]?.path);
+  const rawImage = service?.images?.[0]?.path || "";
+
+  const image = rawImage
+    ? rawImage.startsWith("http")
+      ? rawImage.replace("http://", "https://")
+      : `${import.meta.env.VITE_API_URL.replace(
+          "/api",
+          ""
+        )}/storage/${rawImage}`
+    : "";
 
   const title = service?.title || "Untitled service";
   const provider = service?.user?.name || "Unknown provider";
