@@ -10,13 +10,13 @@ export default function HomeNavbar() {
           <a href="#" className="text-emerald-500 transition hover:text-emerald-600">
             Home
           </a>
-          <a href="#services" className="transition hover:text-slate-900">
+          <a href="services" className="transition hover:text-slate-900">
             Services
           </a>
-          <a href="#contact" className="transition hover:text-slate-900">
+          <a href="contact" className="transition hover:text-slate-900">
             Contact
           </a>
-          <a href="#about" className="transition hover:text-slate-900">
+          <a href="about" className="transition hover:text-slate-900">
             About
           </a>
         </nav>
