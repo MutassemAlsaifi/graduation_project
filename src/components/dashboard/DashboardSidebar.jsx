@@ -4,12 +4,18 @@ import {
   PlusSquare,
   Settings,
   LogOut,
+  Users,
+  ShieldCheck,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/authService";
 
 export default function DashboardSidebar({ user }) {
   const navigate = useNavigate();
+
+  const isAdmin = user?.role === "admin";
+  const canManageServices =
+    user?.role === "provider" || user?.role === "admin";
 
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
@@ -29,9 +35,22 @@ export default function DashboardSidebar({ user }) {
 
   const items = [
     { icon: LayoutDashboard, label: "Overview", to: "/dashboard" },
-    { icon: Briefcase, label: "My Services", to: "/services" },
-    { icon: PlusSquare, label: "Add Service", to: "/services/new" },
-    { icon: Settings, label: "Settings", to: "/auth/profile" },
+
+    ...(canManageServices
+      ? [
+          { icon: Briefcase, label: "My Services", to: "/services" },
+          { icon: PlusSquare, label: "Add Service", to: "/services/new" },
+        ]
+      : []),
+
+    ...(isAdmin
+      ? [
+          { icon: Users, label: "Users", to: "/admin/users" },
+          { icon: ShieldCheck, label: "Admin Panel", to: "/admin" },
+        ]
+      : []),
+
+    { icon: Settings, label: "Settings", to: "/profile" },
   ];
 
   return (
@@ -49,7 +68,7 @@ export default function DashboardSidebar({ user }) {
               DirectServe
             </span>
             <span className="text-xs text-slate-500">
-              {user?.name || "User"}
+              {user?.name || "User"} {isAdmin ? "(Admin)" : ""}
             </span>
           </div>
         </NavLink>

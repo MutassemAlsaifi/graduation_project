@@ -4,7 +4,7 @@ import FeaturedServiceCard from "./FeaturedServiceCard";
 
 export default function HeroSection({ featuredService }) {
   return (
-    <section className="relative overflow-hidden px-6 py-12 lg:px-8 lg:py-16">
+    <section className="relative overflow-hidden px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.2fr_0.9fr]">
         <div>
           <p className="mb-4 text-sm font-medium uppercase tracking-[0.18em] text-emerald-500">

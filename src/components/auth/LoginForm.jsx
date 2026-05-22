@@ -27,9 +27,9 @@ export default function LoginForm() {
       setIsSubmitting(true);
 
       const response = await loginUser({
-        email: form.email,
-        password: form.password,
-      });
+  email: form.email.trim(),
+  password: form.password,
+});
 
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));

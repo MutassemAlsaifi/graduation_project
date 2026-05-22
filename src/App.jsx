@@ -11,6 +11,9 @@ import RegisterPage from "./components/pages/RegisterPage";
 import DashboardPage from "./components/pages/DashboardPage";
 import ProfilePage from "./components/pages/ProfilePage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminUsersPage from "./components/pages/AdminUsersPage";
+import AdminRoute from "./components/auth/AdminRoute";
+import AdminDashboardPage from "./components/pages/AdminDashboardPage";
 
 function App() {
   return (
@@ -65,7 +68,25 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsersPage />
+            </AdminRoute>
+          }
+        />
       </Routes>
+
     </main>
   );
 }

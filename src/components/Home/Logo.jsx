@@ -1,12 +1,20 @@
+import { Link } from "react-router-dom";
+import logo from "/barlogo.png";
+
 export default function Logo() {
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-        <span className="text-sm font-semibold">D</span>
-      </div>
+    <Link to="/" className="flex items-center gap-3">
+      
+      <img
+        src={logo}
+        alt="DirectServe Logo"
+        className="h-12 w-auto object-contain"
+      />
+
       <span className="text-lg font-semibold tracking-tight text-slate-800">
         DirectServe
       </span>
-    </div>
+
+    </Link>
   );
 }
