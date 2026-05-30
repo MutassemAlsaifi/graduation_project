@@ -14,7 +14,8 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminUsersPage from "./components/pages/AdminUsersPage";
 import AdminRoute from "./components/auth/AdminRoute";
 import AdminDashboardPage from "./components/pages/AdminDashboardPage";
-
+import AboutPage from "./components/pages/AboutPage";
+import ContactPage from "./components/pages/ContactPage";
 function App() {
   return (
     <main className="min-h-screen bg-[#f8faf8] text-slate-900">
@@ -24,7 +25,8 @@ function App() {
         <Route path="/services/:id" element={<ServiceDetailsPage />} />
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
-
+<Route path="/about" element={<AboutPage />} />
+<Route path="/contact" element={<ContactPage />} />
         <Route
           path="/services/new"
           element={
