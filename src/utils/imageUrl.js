@@ -10,12 +10,12 @@ export function getImageUrl(path) {
   const BASE_URL = API_URL.replace("/api", "");
 
   if (path.startsWith("http")) {
-    return path
-      .replace("http://", "https://")
-      .replace("/services/", "/storage/services/");
+    return path.replace("http://", "https://");
   }
 
-  const cleanPath = path.replace("public/", "").replace("storage/", "");
+  const cleanPath = path
+    .replace(/^public\//, "")
+    .replace(/^storage\//, "");
 
   return `${BASE_URL}/storage/${cleanPath}`;
 }
